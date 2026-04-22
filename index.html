@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <title>BC Goods Approval</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- =================== LOGIN =================== -->
+<div id="page-login" class="page active">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="org-logo">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <path d="M14 3L25 8.5V19.5L14 25L3 19.5V8.5L14 3Z" fill="white" opacity="0.95"/>
+          <path d="M14 9L20 12V18L14 21L8 18V12L14 9Z" fill="#1a56db" opacity="0.8"/>
+        </svg>
+      </div>
+      <h1>BC Goods Approval</h1>
+      <p>Sistem Permintaan Barang Persediaan<br>PSO Bea dan Cukai Tipe A Tanjung Balai Karimun</p>
+    </div>
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="login-user" placeholder="Masukkan username">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div id="login-error" style="display:none;background:#fde8e8;color:#c81e1e;border:1px solid #fca5a5;border-radius:8px;padding:9px 13px;font-size:13px;margin-bottom:10px;"></div>
+    <button class="btn btn-primary btn-full btn-lg" onclick="doLogin()">Masuk ke Portal</button>
+  </div>
+</div>
+
+<!-- =================== MAIN APP =================== -->
+<div id="page-app" class="page">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L22 7V17L12 22L2 17V7L12 2Z"/></svg>
+      </div>
+      <div>
+        <div class="logo-text">BC Goods Approval</div>
+        <div class="logo-sub" id="topbar-sub">Portal</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="notif-wrap" onclick="toggleNotifPanel()" id="notif-btn" title="Notifikasi">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <div class="notif-dot" id="notif-dot" style="display:none;"></div>
+        <div id="notif-count" style="display:none;position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;border-radius:20px;font-size:9px;font-weight:700;min-width:16px;height:16px;align-items:center;justify-content:center;border:1.5px solid #fff;"></div>
+      </div>
+      <div class="user-badge">
+        <div class="user-avatar av-blue" id="user-avatar">?</div>
+        <div>
+          <div class="user-name" id="user-name-disp">—</div>
+          <div class="user-role-label" id="user-role-disp">—</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Keluar</button>
+    </div>
+  </div>
+  <div class="main-content" id="app-content"></div>
+</div>
+
+<!-- KERANJANG BAR -->
+<div id="keranjang-bar" style="display:none;" class="keranjang-bar">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div style="width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🛒</div>
+    <div>
+      <div style="font-family:var(--font-head);font-size:13px;font-weight:700;color:#fff;">Keranjang — <span id="kj-count" style="font-size:15px;">0</span> item</div>
+      <div style="font-size:11px;opacity:0.8;" id="kj-preview">—</div>
+    </div>
+  </div>
+  <button class="btn" onclick="showSubmitPopup()" style="background:rgba(255,255,255,0.95);color:var(--primary);font-weight:700;border:none;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-radius:12px;padding:9px 20px;">Submit Bon →</button>
+</div>
+
+<div id="modal-container"></div>
+
+<!-- NOTIFIKASI PANEL -->
+<div id="notif-panel" style="position:fixed;top:60px;right:16px;width:360px;max-height:520px;background:#fff;border:1px solid var(--gray-200);border-radius:14px;box-shadow:var(--shadow-lg);z-index:400;overflow:hidden;flex-direction:column;">
+  <div style="padding:14px 18px 10px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;">
+    <h4 style="font-size:14px;font-weight:600;">Notifikasi</h4>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button onclick="markAllRead()" style="font-size:11px;color:var(--primary);background:none;border:none;cursor:pointer;">Tandai semua dibaca</button>
+      <button onclick="closeNotifPanel()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--gray-400);line-height:1;">×</button>
+    </div>
+  </div>
+  <div id="notif-list" style="overflow-y:auto;max-height:440px;"></div>
+</div>
+<div id="notif-backdrop" onclick="closeNotifPanel()" style="display:none;position:fixed;inset:0;z-index:399;"></div>
+
+<div id="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
